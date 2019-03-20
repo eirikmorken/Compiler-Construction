@@ -142,11 +142,79 @@ destroy_symbol_table ( void )
 void
 find_globals ( void )
 {
+
+    global_names = malloc(sizeof(tlhash_t));
+    tlhash_init(global_names, 32);
+    node_t *global_parent = root->children[0];
+    size_t sequence_counter = 0;
+    
+
+    for(int i = 0; i < global_parent->n_children; i++){ //Searches all children of GLOBAL_LIST. DEC or FUNC
+        
+        symbol_t *symbol = malloc(sizeof(symbol_t));
+        node_t *global_child = global_parent->children[i];
+        switch(global_parent->type){
+            //node_t *grandchild= global_child->children[0]
+
+            case FUNCTION: //Child1: Indentifier, Child2: parameter_list, Child3: statement
+
+                symbol->name = global_child->children[0]->data;
+                symbol->type = SYM_FUNCTION;
+                symbol->node = global_child->children[2];
+                symbol->seq = sequence_counter;
+                //symbol->nparms = 0;
+                symbol->locals = malloc(sizeof(tlhash_t));
+                sequence_counter++;
+
+                tlhash_init (symbol->locals, 32);
+                if (global_child->children[1]){
+                    symbol->nparms = global_child->children[1]->n_children;
+                    for (int j = 0; j < symbol->nparms; j++){
+                        symbol_t *sym_p = malloc(sizeof(symbol_t)); 
+                        sym_p->name = global_child->children[1]->children[j]->data;
+                        sym_p->type = SYM_PARAMETER;
+                        sym_p->node = NULL;
+                        sym_p->seq = j;
+                        sym_p->nparms = 0;
+                        sym_p->locals = NULL;
+
+                        tlhash_insert(sym_p->locals, sym_p->name, strlen(sym_p->name), sym_p);
+
+
+                    }
+                }break;
+
+                
+
+
+
+            case DECLARATION: 
+                for (int j=0; j < global_child->children[0]->n_children; j++){ //Searches through VARIABLE_LIST
+                    symbol->name = global_child->children[0]->children[j]->data,
+                    symbol->type = SYM_GLOBAL_VAR,
+                    symbol->node = NULL,
+                    symbol->seq = 0,
+                    symbol->nparms = 0,
+                    symbol->locals = NULL;
+                    //tl_hash insert for global
+
+                }break;
+
+            
+        }
+        
+
+    }
+    //TODO
+    //Find all nodes on depth one.
+
+    
 }
 
 void
 bind_names ( symbol_t *function, node_t *root )
 {
+    //TODO
 }
 
 void

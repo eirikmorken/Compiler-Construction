@@ -25,10 +25,10 @@
 %token VAR NUMBER IDENTIFIER STRING
 
 %%
-program :
+program:
       global_list { N1C ( root, PROGRAM, NULL, $1 );}
     ;
-global_list :
+global_list:
       global { N1C ( $$, GLOBAL_LIST, NULL, $1 ); }
     | global_list global { N2C ( $$, GLOBAL_LIST, NULL, $1, $2 ); }
     ;
@@ -36,39 +36,39 @@ global:
       function { N1C ( $$, GLOBAL, NULL, $1 ); }
     | declaration { N1C ( $$, GLOBAL, NULL, $1 ); }
     ;
-statement_list :
+statement_list:
       statement { N1C ( $$, STATEMENT_LIST, NULL, $1 ); }
     | statement_list statement { N2C ( $$, STATEMENT_LIST, NULL, $1, $2 ); }
     ;
-print_list :
+print_list:
       print_item { N1C ( $$, PRINT_LIST, NULL, $1 ); }
     | print_list ',' print_item { N2C ( $$, PRINT_LIST, NULL, $1, $3 ); }
     ;
-expression_list :
+expression_list:
       expression { N1C ( $$, EXPRESSION_LIST, NULL, $1 ); }
     | expression_list ',' expression { N2C($$, EXPRESSION_LIST, NULL, $1, $3); }
     ;
-variable_list :
+variable_list:
       identifier { N1C ( $$, VARIABLE_LIST, NULL, $1 ); }
     | variable_list ',' identifier { N2C ( $$, VARIABLE_LIST, NULL, $1, $3 ); }
     ;
-argument_list :
+argument_list:
       expression_list { N1C ( $$, ARGUMENT_LIST, NULL, $1 ); }
     | /* epsilon */ { $$ = NULL; }
     ;
-parameter_list :
+parameter_list:
       variable_list { N1C ( $$, PARAMETER_LIST, NULL, $1 ); }
     | /* epsilon */ { $$ = NULL; }
     ;
-declaration_list :
+declaration_list:
       declaration { N1C ( $$, DECLARATION_LIST, NULL, $1 ); }
     | declaration_list declaration { N2C ($$, DECLARATION_LIST, NULL, $1, $2); }
     ;
-function :
+function:
       FUNC identifier '(' parameter_list ')' statement
         { N3C ( $$, FUNCTION, NULL, $2, $4, $6 ); }
     ;
-statement :
+statement:
       assignment_statement { N1C ( $$, STATEMENT, NULL, $1 ); }
     | return_statement { N1C ( $$, STATEMENT, NULL, $1 ); }
     | print_statement { N1C ( $$, STATEMENT, NULL, $1 ); }
@@ -77,34 +77,34 @@ statement :
     | null_statement { N1C ( $$, STATEMENT, NULL, $1 ); }
     | block { N1C ( $$, STATEMENT, NULL, $1 ); }
     ;
-block :
+block:
       OPENBLOCK declaration_list statement_list CLOSEBLOCK
         { N2C ($$, BLOCK, NULL, $2, $3); }
     | OPENBLOCK statement_list CLOSEBLOCK { N1C ($$, BLOCK, NULL, $2 ); }
     ;
-assignment_statement :
+assignment_statement:
       identifier ':' '=' expression
         { N2C ( $$, ASSIGNMENT_STATEMENT, NULL, $1, $4 ); }
     ;
-return_statement :
+return_statement:
       RETURN expression
         { N1C ( $$, RETURN_STATEMENT, NULL, $2 ); }
     ;
-print_statement :
+print_statement:
       PRINT print_list
         { N1C ( $$, PRINT_STATEMENT, NULL, $2 ); }
     ;
-null_statement :
+null_statement:
       CONTINUE
         { N0C ( $$, NULL_STATEMENT, NULL ); }
     ;
-if_statement :
+if_statement:
       IF relation THEN statement
         { N2C ( $$, IF_STATEMENT, NULL, $2, $4 ); }
     | IF relation THEN statement ELSE statement
         { N3C ( $$, IF_STATEMENT, NULL, $2, $4, $6 ); }
     ;
-while_statement :
+while_statement:
       WHILE relation DO statement
         { N2C ( $$, WHILE_STATEMENT, NULL, $2, $4 ); }
     ;
@@ -116,7 +116,7 @@ relation:
     | expression '>' expression
         { N2C ( $$, RELATION, strdup(">"), $1, $3 ); }
     ;
-expression : expression '+' expression
+expression: expression '+' expression
         { N2C ( $$, EXPRESSION, strdup("+"), $1, $3 ); }
     | expression '-' expression
         { N2C ( $$, EXPRESSION, strdup("-"), $1, $3 ); }
@@ -133,10 +133,10 @@ expression : expression '+' expression
     | identifier '(' argument_list ')'
         { N2C ( $$, EXPRESSION, NULL, $1, $3 ); }
     ;
-declaration :
+declaration:
       VAR variable_list { N1C ( $$, DECLARATION, NULL, $2 ); }
     ;
-print_item :
+print_item:
       expression
         { N1C ( $$, PRINT_ITEM, NULL, $1 ); }
     | string

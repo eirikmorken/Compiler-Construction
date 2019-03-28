@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <vslc.h>
+#include <ir.h>
 
 
 node_t *root;               // Syntax tree                  
@@ -16,10 +17,17 @@ main ( int argc, char **argv )
 {
     yyparse();
     simplify_tree ( &root, root );
-    node_print ( root, 0 );
+    //node_print ( root, 0 );
     // call function to create symbol table
+    create_symbol_table();
+
+    print_symbol_table();
+    
 	// then call function to print symbol table
+
     destroy_subtree ( root );
 	// call function to destroy symbol table
+    destroy_symbol_table();
+
 
 }

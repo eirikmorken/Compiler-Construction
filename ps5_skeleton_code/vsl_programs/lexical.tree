@@ -1,0 +1,149 @@
+.section .rodata
+intout: .string "%ld "
+strout: .string "%s "
+errout: .string "Wrong number of arguments"
+STR0:	.string "Hello, world!"
+STR1:	.string ""
+STR2:	.string "Hello, \"world\"!"
+STR3:	.string "+"
+STR4:	.string ":="
+STR5:	.string "-"
+STR6:	.string ":="
+STR7:	.string "+ (-"
+STR8:	.string ") :="
+STR9:	.string "*"
+STR10:	.string ":="
+STR11:	.string "/"
+STR12:	.string ":="
+STR13:	.string "Skip..."
+.section .data
+.globl main
+.section .text
+main:
+	pushq %rbp
+	movq %rsp, %rbp
+	subq $1, %rdi
+	cmpq	$0,%rdi
+	jne ABORT
+	cmpq $0, %rdi
+	jz SKIP_ARGS
+	movq %rdi, %rcx
+	addq $0, %rsi
+PARSE_ARGV:
+	pushq %rcx
+	pushq %rsi
+	movq (%rsi), %rdi
+	movq $0, %rsi
+	movq $10, %rdx
+	call strtol
+	popq %rsi
+	popq %rcx
+	pushq %rax
+	subq $8, %rsi
+	loop PARSE_ARGV
+SKIP_ARGS:
+	call	_main
+	jmp END
+ABORT:
+	movq $errout, %rdi
+	call puts
+END:
+	movq %rax, %rdi
+	call exit
+_main:
+	pushq %rbp
+	movq %rsp, %rbp
+	subq $24, %rsp
+	pushq	$0
+	movq $STR0, %rsi
+	movq $strout, %rdi
+	call printf
+	movq $'\n', %rdi
+	call putchar
+	movq $STR1, %rsi
+	movq $strout, %rdi
+	call printf
+	movq $'\n', %rdi
+	call putchar
+	movq $STR2, %rsi
+	movq $strout, %rdi
+	call printf
+	movq $'\n', %rdi
+	call putchar
+	ASSIGNMENT_STATEMENT
+	ASSIGNMENT_STATEMENT
+	ASSIGNMENT_STATEMENT
+	movq $STR3, %rsi
+	movq $strout, %rdi
+	call printf
+	movq $STR4, %rsi
+	movq $strout, %rdi
+	call printf
+	movq $'\n', %rdi
+	call putchar
+	ASSIGNMENT_STATEMENT
+	movq $STR5, %rsi
+	movq $strout, %rdi
+	call printf
+	movq $STR6, %rsi
+	movq $strout, %rdi
+	call printf
+	movq $'\n', %rdi
+	call putchar
+	ASSIGNMENT_STATEMENT
+	movq $STR7, %rsi
+	movq $strout, %rdi
+	call printf
+	movq $STR8, %rsi
+	movq $strout, %rdi
+	call printf
+	movq $'\n', %rdi
+	call putchar
+	ASSIGNMENT_STATEMENT
+	movq $STR9, %rsi
+	movq $strout, %rdi
+	call printf
+	movq $STR10, %rsi
+	movq $strout, %rdi
+	call printf
+	movq $'\n', %rdi
+	call putchar
+	ASSIGNMENT_STATEMENT
+	movq $STR11, %rsi
+	movq $strout, %rdi
+	call printf
+	movq $STR12, %rsi
+	movq $strout, %rdi
+	call printf
+	movq $'\n', %rdi
+	call putchar
+	movq	%rax, %rbx
+	cmp %rax, %rbx
+jge	 END_IF0
+	movq $'\n', %rdi
+	call putchar
+END_IF0:
+WHILE0:
+	movq	%rax, %rbx
+	cmp %rax, %rbx
+jge	 DONE0
+	movq	%rax, %rbx
+	cmp %rax, %rbx
+jge	 ELSE1
+	jmp END_IF1
+	ASSIGNMENT_STATEMENT
+ELSE1:
+	ASSIGNMENT_STATEMENT
+	movq $STR13, %rsi
+	movq $strout, %rdi
+	call printf
+	movq $'\n', %rdi
+	call putchar
+	jmp WHILE0
+END_IF1:
+	movq $'\n', %rdi
+	call putchar
+	jmp WHILE0
+DONE0:
+	leave
+	ret
